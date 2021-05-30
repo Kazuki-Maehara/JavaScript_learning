@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple setInterval clock</title>
+    <style>
+      p {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="clock">0:0:0</p>
+    <button id="start">start</button>
+    <button id="reset">reset</button>
+    <button id="stop">stop</button>
+
+    <script>
+      function displayTime(startTime) {
+        let date = new Date();
+        let milliseconds = Date.now() - startTime;
+        seconds = Math.floor(milliseconds/1000);
+
+        second = seconds % 60;
+        minutes = (seconds - second) / 60;
+
+        minute = minutes % 60;
+        hours = (minutes - minute) / 60;
+
+        hour = hours % 24;
+
+        let time =  hour + ":" + minute + ":" + second;
+
+        document.querySelector('.clock').textContent = time;
+      }
+
+
+      function startCount(){
+        if (document.querySelector('.clock').textContent == "0:0:0"){
+          let date = new Date();
+          let startTime = Date.now();
+          displayTime(startTime);
+          const clockID = setInterval(displayTime,100, startTime);
+          document.getElementById('stop').addEventListener('click', {clockID: clockID, handleEvent: stopCount}, false);
+          document.getElementById('reset').addEventListener('click', {clockID: clockID, handleEvent: resetCount},false);
+        }
+      }
+
+      function stopCount(){
+        clearInterval(this.clockID);
+      }
+
+      function resetCount(){
+        clearInterval(this.clockID);
+        document.getElementById('reset').removeEventListener('click', resetCount,false);
+        document.getElementById('stop').removeEventListener('click', stopCount,false);
+        let date = new Date();
+        let startTime = Date.now();
+        displayTime(startTime);
+        document.getElementById('stop').addEventListener('click', {clockID: clockID, handleEvent: stopCount}, false);
+        document.getElementById('reset').addEventListener('click', {clockID: clockID, handleEvent: resetCount},false);
+      }
+
+      document.getElementById('start').addEventListener('click', startCount, false);
+
+    </script>
+  </body>
+</html>
