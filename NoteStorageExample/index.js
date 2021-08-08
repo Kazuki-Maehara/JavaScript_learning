@@ -142,7 +142,32 @@ window.onload = function() {
       }
     };
   }
-  function deleteItem(){
-    
+
+  // Define the deleteItem() function
+  function deleteItem(e){
+      // retrieve the name of the taks we want to delete, We need
+      // to convert it to a number before trying to use it with IDB; IBD key
+      // values are tye-sensitive.
+      let noteId = Number(e.target.parentNode.getAttribute('data-note-id'));
+
+      // open a database transaction and delete the task, finding it using the id we retrieved above
+      let transaction = db.transaction(['notes_os'], 'readwrite');
+      let objectStore = transaction.objectStore('notes_os');
+      let request = objectStore.delete(noteId);
+
+      // report that the data item has been deleted
+      transaction.oncomplete = function() {
+        // delete the parent of the button
+        // which is the list item, so it is no longer displayed
+        e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+        console.log('Note ' + noteId + ' deleted.');
+
+        // Again, if list item is empty, display a 'No notes stored' message
+        if(!list.firstChild) {
+          let listItem = document.createElement('li');
+          listItem.textContent = ' No notes stored.';
+          list.appendChild(listItem);
+        }
+      };
   }
 };
